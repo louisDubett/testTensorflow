@@ -1,0 +1,10 @@
+<?xml version='1.0' encoding='utf-8'?>
+
+<configuration>
+    <root_dir>"c:\git\test-dataset"</root_dir>
+    
+    <test_item file="aaa.jpg" expected="becher"/>
+    <test_item file="bbb.jpg" expected="kolben"/>
+    <test_item file="ccc.jpg" expected="kolben"/>
+    <test_item file="ddd.jpg" expected="reagenglass"/>
+</configuration>

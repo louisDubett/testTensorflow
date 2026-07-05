@@ -1,0 +1,17 @@
+<?xml version='1.0' encoding='utf-8'?>
+<test_result>
+    <root_dir>"c:\git\test-dataset"</root_dir>
+    <success />
+    <fail>
+        <test_item file="aaa.jpg" expected="becher" got="FILE_NOT_FOUND" confidence_score="0.00" />
+        <test_item file="bbb.jpg" expected="kolben" got="FILE_NOT_FOUND" confidence_score="0.00" />
+        <test_item file="ccc.jpg" expected="kolben" got="FILE_NOT_FOUND" confidence_score="0.00" />
+        <test_item file="ddd.jpg" expected="reagenglass" got="FILE_NOT_FOUND" confidence_score="0.00" />
+    </fail>
+    <success>
+        <test_item file="aaa.jpg" expected="becher" got="becher" confidence_score="75.6" />
+        <test_item file="bbb.jpg" expected="kolben" got="kolben" confidence_score="75.6"/>
+    </success>
+
+    <summary total="4" passed="0" failed="4" accuracy="0.00" />
+</test_result>
