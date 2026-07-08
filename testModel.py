@@ -5,21 +5,36 @@ import numpy as np
 import argparse
 import h5py
 
-# Press Maj+F10 to execute it or replace it with your code.
-# Press Double Shift to search everywhere for classes, files, tool windows, actions, and settings.
-
 def louis_ki(imagePath,model_name):
     # Disable scientific notation for clarity
     np.set_printoptions(suppress=True)
 
     # Load the model
+    #heck because old version of tensorflow used by teachable machine
+    #https://stackoverflow.com/questions/78187204/trying-to-export-teachable-machine-model-but-returning-error
+    f = h5py.File(model_name, mode="r+")
+    model_config_string = f.attrs.get("model_config")
+
+    if model_config_string.find('"groups": 1,') != -1:
+        model_config_string = model_config_string.replace('"groups": 1,', '')
+    f.attrs.modify('model_config', model_config_string)
+    f.flush()
+
+    model_config_string = f.attrs.get("model_config")
+
+    assert model_config_string.find('"groups": 1,') == -1
+
     model = load_model(model_name, compile=False)
 
     # Load the labels
     #class_names = open("labels.txt", "r").readlines()
-    class_names = ["daisy", "dandelion", "rose", "sunflowers", "tulips"]
-    img_height = 180
-    img_width = 180
+    #TODO remove hard coded
+    class_names = ["Becher", "Erlenmeyer", "Kolben", "Messzylinder", "Pipette","Reagenzglas"]
+
+    #size given by teachable machine
+    img_height = 224
+    img_width = 224
+
     img = tf.keras.utils.load_img(
         imagePath, target_size=(img_height, img_width)
     )
