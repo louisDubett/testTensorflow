@@ -40,9 +40,11 @@ def fill_class_names(data_dir):
 def train(dataset_url):
 	#dataset_url = "https://storage.googleapis.com/download.tensorflow.org/example_images/flower_photos.tgz"
 
-	data_dir = tf.keras.utils.get_file('flower_photos', origin=dataset_url, untar=True)
+	print(f"training for {dataset_url}")
+	data_dir = tf.keras.utils.get_file('chimie-dataset', origin=dataset_url, untar=True)
 	data_dir = pathlib.Path(data_dir)
-	data_dir = data_dir / "flower_photos"
+	# sub dir as in example from google
+	data_dir = data_dir / "DATASET"
 	if not os.path.exists(data_dir):
 		raise FileNotFoundError(f"Dataset directory not found at: {data_dir}")
 	image_count = len(list(data_dir.glob('*/*.jpg')))
@@ -54,8 +56,8 @@ def train(dataset_url):
 
 	#training split
 	batch_size = 32
-	img_height = 180
-	img_width = 180
+	img_height = 300
+	img_width = 400
 
 	#We will split the dataset into 80% training and 20% validation datasets.
 	#Training Split: Data on which the model trains on.
@@ -116,7 +118,9 @@ def train(dataset_url):
 	#    layers.Rescaling(1./255, input_shape=(180,180, 3)): Rescales images to [0,1] and sets input image size.
 	#    layers.Conv2D(16, 3, padding='same', activation='relu'): Adds a convolutional layer with 16 filters and ReLU activation.
 	#    layers.MaxPooling2D(): Adds a max-pooling layer to down sample feature maps.
-	num_classes = 5 # len(class_names)
+	num_classes = 6 # len(class_names)
+	#TODO fix this hard coded value to be dynamic based on the dataset
+	
 	model = Sequential([
 		layers.Rescaling(1./255, input_shape=(img_height,img_width, 3)),
 		layers.Conv2D(16, 3, padding='same', activation='relu'),
@@ -241,7 +245,8 @@ def train(dataset_url):
 
 	predictions = model.predict(img_array)
 	score = tf.nn.softmax(predictions[0])
-	class_names=["daisy","dandelion","rose","sunflowers","tulips"]
+	#class_names=["daisy","dandelion","rose","sunflowers","tulips"]
+	class_names=["becher","erlenmeyer","kolben","messzylinder","pipette","reagenzglas"]
 	print(
 		"This image most likely belongs to {} with a {:.2f} percent confidence."
 		.format(class_names[np.argmax(score)], 100 * np.max(score))
@@ -254,10 +259,12 @@ if __name__ == '__main__':
 	try:
 		args = parser.parse_args()
 		if (args.test):
-			train("/home/christian/Téléchargements/flower_photos.tgz")
+			#train("/home/christian/Téléchargements/flower_photos2.tgz")
+			train("file:/home/christian/git/testTensorflow/chimie-dataset.tgz")
 		else:
 			if args.dataset_url is None:
 				print("missing image argument")
+				train("file:/home/christian/git/testTensorflow/chimie-dataset.tgz")
 				parser.print_help()
 			else:
 				print('processing '+ args.dataset_url)
