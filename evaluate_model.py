@@ -65,28 +65,35 @@ def normalize_root_dir_value(raw_root: str) -> str:
 def evaluate_model(config_path: str, 
                    model_path: str, 
                    labels_path: str, 
-                   output_path: str ) -> str:
+                   output_path: str ,
+                   teachable_machine: bool ) -> str:
     config_file = Path(config_path)
     if not config_file.exists():
         raise FileNotFoundError(f"Config file not found: {config_path}")
 
-    #mot needed normally, done once for all 
+    # not needed normally, done once for all
     # workaround_old_model(model_path)
 
-    model = load_model(model_path, compile=False)
     class_names = read_class_names(labels_path)
+    if teachable_machine:
+        model = load_model(model_path, compile=False)
 
-    #TODO find a solution without warning
-    input_shape = model.input_shape
-    if isinstance(input_shape, list):
-        input_shape = input_shape[0]
+        #TODO find a solution without warning
+        input_shape = model.input_shape
+        if isinstance(input_shape, list):
+            input_shape = input_shape[0]
 
-    if len(input_shape) != 4 or input_shape[1] is None or input_shape[2] is None:
-        raise ValueError(f"Unsupported model input shape: {input_shape}")
+        if len(input_shape) != 4 or input_shape[1] is None or input_shape[2] is None:
+            raise ValueError(f"Unsupported model input shape: {input_shape}")
 
-    img_height = int(input_shape[1])
-    img_width = int(input_shape[2])
-    use_tm_norm = img_height == 224 and img_width == 224
+        img_height = int(input_shape[1])
+        img_width = int(input_shape[2])
+        use_tm_norm = img_height == 224 and img_width == 224
+    else:
+        model = tf.keras.models.load_model(model_path)
+        img_height = 300
+        img_width = 400
+        use_tm_norm = False
 
     tree = ET.parse(config_file)
     config_root = tree.getroot()
@@ -181,6 +188,9 @@ def evaluate_model(config_path: str,
 
 
 def main() -> None:
+    #for ex
+    # -model teachable_machine_model.h5 --teachable_machine -labels tensorflow_labels.txt -config config-accuracy-test.xml
+    # -model my_model-chimie.keras --tensorflow -labels teachable_machine_labels.txt -config config-accuracy-test.xml
     parser = argparse.ArgumentParser(
         description="Evaluate a Keras model with an XML config and produce a test_result XML file."
     )
@@ -199,6 +209,9 @@ def main() -> None:
         default="labels.txt",
         help="Path to labels file.",
     )
+    parser.add_argument('--teachable_machine', action='store_true', help='use teachable machine model')
+    parser.add_argument('--tensorflow', action='store_true', help='use teachable machine model')
+
     parser.add_argument(
         "-output",
         default=None,
@@ -212,6 +225,7 @@ def main() -> None:
         model_path=args.model,
         labels_path=args.labels,
         output_path=args.output,
+        teachable_machine=args.teachable_machine
     )
 
     print(f"Test result written to: {output_file}")

@@ -13,7 +13,7 @@ def tensorflow_model_ki(imagePath,model_name ):
     # Check its architecture
     new_model.summary()
     # Evaluate the restored model
-    test_labels = ["becher", "erlenmeyer", "kolben", "messzylinder", "pipette", "reagenzglas"]
+
     img_height = 300
     img_width = 400
     img = tf.keras.utils.load_img(
