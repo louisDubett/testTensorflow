@@ -1,0 +1,6 @@
+0 Becher
+1 Erlenmeyer
+2 Kolben
+3 Messzylinder
+4 Pipette
+5 Reagenzglas
